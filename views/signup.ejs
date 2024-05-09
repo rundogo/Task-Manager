@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <title></title>
+    <meta name="description" content="" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <div class="website varela-round-regular">
+      <div class="navigation login lilita-one-regular">
+        <h3>CronosTask</h3>
+      </div>
+      <div class="main-container">
+        <form class="login-form" action="">
+          <h4>Signup</h4>
+          <div>
+            <label for="name">Name</label>
+            <input type="text" name="name" required />
+          </div>
+          <div>
+            <label for="surname">Surname</label>
+            <input type="text" name="surname" required />
+          </div>
+          <div>
+            <label for="email">Email</label>
+            <input type="email" name="email" required />
+          </div>
+          <div class="email error"></div>
+          <div>
+            <label for="password">Password</label>
+            <input type="password" name="password" required />
+          </div>
+          <div class="password error"></div>
+          <button class="btn">Sign up</button>
+        </form>
+        <div class="needaccount">
+          <p>Already have an account, <a href="login">Login</a></p>
+        </div>
+      </div>
+    </div>
+    <script>
+      const form = document.querySelector("form");
+      let emailError = document.querySelector(".email.error");
+      let passwordError = document.querySelector(".password.error");
+      form.addEventListener("submit", async (e) => {
+        e.preventDefault();
+        const name = form.name.value;
+        const surname = form.surname.value;
+        const email = form.email.value;
+        const password = form.password.value;
+        try {
+          const res = await fetch("/signup", {
+            method: "POST",
+            body: JSON.stringify({
+              name: name,
+              surname: surname,
+              email: email,
+              password: password,
+            }),
+            headers: { "Content-Type": "application/json" },
+          });
+
+          const data = await res.json();
+          console.log(data);
+          //clear error elements
+          emailError.innerHTML = "";
+          passwordError.innerHTML = "";
+          if (data.userId) {
+            location.assign("/");
+          } else {
+            displayValidationError(data);
+          }
+        } catch (error) {
+          console.log(error);
+        }
+      });
+
+      const displayValidationError = (data) => {
+        if (data.email) {
+          emailError.style.display = "block";
+          emailError.innerHTML = data.email;
+          passwordError.innerHTML = "";
+        } else {
+          passwordError.style.display = "block";
+          passwordError.innerHTML = data.password;
+          emailError.innerHTML = "";
+        }
+      };
+    </script>
+    <script src="" async defer></script>
+  </body>
+</html>

@@ -1,0 +1,211 @@
+.lilita-one-regular {
+  font-family: "Lilita One", sans-serif;
+  font-weight: 400;
+  font-style: normal;
+}
+
+.varela-round-regular {
+  font-family: "Varela Round", sans-serif;
+  font-weight: 400;
+  font-style: normal;
+}
+
+body {
+  font-size: 16px;
+}
+
+.website {
+  display: flex;
+  flex-direction: column;
+  width: 100vw;
+  height: 100vh;
+}
+
+.website > div {
+  margin: 0 5vw;
+}
+
+.navigation {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex: 0;
+}
+
+.navigation h3 {
+  color: rgb(10, 10, 195);
+  font-size: 2rem;
+  margin: 3vh 0;
+}
+
+footer {
+  border-top: solid rgb(90, 90, 90) 1px;
+  flex: 0;
+  font-size: 0.8rem;
+}
+
+.nav-item {
+  display: flex;
+  font-size: 1.2rem;
+  gap: 2vw;
+}
+
+.login {
+  font-size: 1.1rem;
+  font-weight: bold;
+  padding: 1vh 1vw;
+}
+
+.signup {
+  border: white;
+  padding: 1vh 1vw;
+  border-radius: 10px;
+  background-color: rgb(146, 189, 230);
+  font-size: 1.1rem;
+  font-weight: bold;
+}
+
+.navigation a {
+  color: black;
+  text-decoration: none;
+}
+
+.navigation a:hover {
+  color: rgb(128, 128, 128);
+}
+
+.navigation.login {
+  border: none;
+  justify-content: left;
+  font-size: 1.5rem;
+}
+
+.main-container {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+}
+
+.login-form {
+  display: flex;
+  flex-direction: column;
+  margin: 0 auto;
+  padding: 1vh 1vw;
+  border-radius: 10px;
+  box-shadow: 5px 5px 5px 5px rgb(189, 189, 189);
+  height: max-content;
+  gap: 2vh;
+  font-size: 1rem;
+}
+
+.login-form > h4 {
+  margin: 0 0 1vh 0;
+  padding: 0;
+  font-size: 1.4rem;
+  color: rgb(10, 10, 195);
+  align-self: left;
+}
+
+.login-form > div {
+  display: flex;
+  flex-direction: column;
+  gap: 1vh;
+}
+
+.login-form > button {
+  margin: 1vh auto;
+  padding: 0.5vh 1vw;
+  font-size: 0.8rem;
+  border: white;
+  border-radius: 10px;
+  width: auto;
+  height: auto;
+  background-color: rgb(125, 179, 230);
+  font-size: 1.1rem;
+  font-weight: bold;
+}
+
+.login-form > button:hover {
+  outline: rgb(74, 130, 165) solid 2px;
+}
+
+.login-form > div > input {
+  width: 15vw;
+  height: 2vh;
+  padding: 8px 20px;
+  border-radius: 5px;
+  border: solid 1px rgb(157, 157, 157);
+  outline: none;
+  box-shadow: 1px 1px rgb(189, 189, 189);
+  font-size: 1rem;
+}
+
+#error-message {
+  color: red;
+}
+
+.email.error,
+.password.error {
+  display: none;
+  margin: 0;
+  padding: 0;
+  color: red;
+  font-size: 0.8rem;
+}
+
+.profile {
+  border: white;
+  padding: 1vh 1vw;
+  border-radius: 10px;
+  background-color: rgb(123, 233, 248);
+  font-size: 1.1rem;
+  font-weight: bold;
+}
+
+.logout {
+  border: white;
+  padding: 1vh 1vw;
+  border-radius: 10px;
+  background-color: rgb(234, 188, 188);
+  font-size: 1.1rem;
+  font-weight: bold;
+}
+
+.needaccount {
+  align-self: center;
+  margin: 2vh 0;
+}
+
+.taskmanager {
+  display: grid;
+  grid-template-columns: 1fr 4fr;
+}
+
+.section-1 {
+  margin: 5vh 0;
+}
+
+.section-1 > button {
+  margin: 10px 0;
+  padding: 5px 10px;
+}
+
+.section-1 form {
+  display: flex;
+  flex-direction: column;
+}
+
+.section-1 > form > input,
+select {
+  padding: 5px;
+  margin: 0.5vh 0;
+  font-size: 14px;
+  outline: none;
+  width: 15vw;
+}
+
+.section-1 > form > button {
+  margin: 1vh 0;
+  padding: 5px;
+  width: 5vw;
+}

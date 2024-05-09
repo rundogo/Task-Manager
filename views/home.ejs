@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <title></title>
+    <meta name="description" content="" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <div class="website varela-round-regular">
+      <div class="navigation lilita-one-regular">
+        <a href="/"><h3>CronosTask</h3></a>
+        <div class="nav-item">
+          <a class="profile" href="/profile">Profile</a>
+          <a class="logout" href="logout">Logout</a>
+        </div>
+      </div>
+      <div class="main-container">
+        <div class="task-manager">
+          <div class="section-1">
+            <button class="create-btn">Create task</button>
+            <form action="">
+              <input type="text" name="title" required />
+              <input type="text" name="description" required />
+              <select name="status" id="status">
+                <option value="default" selected disabled>Status</option>
+                <option value="Not Started">Not Started</option>
+                <option value="In Progess">In Progress</option>
+                <option value="Completed">Completed</option>
+              </select>
+              <input type="date" name="dueDate" />
+              <button>create</button>
+            </form>
+          </div>
+          <div class="section-2"></div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      const taskForm = document.querySelector("form");
+
+      taskForm.addEventListener("submit", async (e) => {
+        e.preventDefault();
+
+        const title = taskForm.title.value;
+        const description = taskForm.description.value;
+        const status = taskForm.status.value;
+        const dueDate = taskForm.dueDate.value;
+
+        const res = await fetch("/tasks/create-task", {
+          method: "POST",
+          body: JSON.stringify({
+            title,
+            description,
+            status,
+            dueDate,
+          }),
+          headers: { "Content-Type": "application/json" },
+        });
+
+        const data = await res.json();
+        console.log(data[25]);
+      });
+    </script>
+    <script src="" async defer></script>
+  </body>
+</html>
