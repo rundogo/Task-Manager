@@ -1,0 +1,24 @@
+Creating authentication using Nodejs, express and mongodb
+
+1. create signup page
+2. create users schema, model it and connect to mongodb
+3. create signup route
+4. create new users and validate different fields
+5. hash the password
+6. create JWT token for cookies and future auto login
+7. re route to protected pages after successful sign up
+
+login page
+1. validate login, compare mail and passwords
+2. re route users to protected pages  
+protected pages check for jwt or direct you to login/signup page
+
+logout
+1. set cookie jwt to black
+2. redirect to landing page
+
+    git config --global --edit
+
+After doing this, you may fix the identity used for this commit with:
+
+    git commit --amend --reset-author
