@@ -2,5 +2,5 @@
 node_modules/
 
 #Ignore other personal files
-projectnotes
+projectnotes.txt
 requirements
