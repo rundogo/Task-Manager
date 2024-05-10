@@ -30,14 +30,7 @@ app.get("/landing", (req, res) => {
 });
 
 //Send requests to authRouter
-app.use(
-  "/",
-  async (req, res, next) => {
-    console.log(req.url);
-    next();
-  },
-  authRouter
-);
+app.use("/", authRouter);
 
 //Send requests to taskRouter
 //This should be after authentication router as the taskRouter can only be executed by logged in users only

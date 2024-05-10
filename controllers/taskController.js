@@ -1,9 +1,9 @@
 const express = require("express");
 const app = express();
 const mongoose = require("mongoose");
-const TaskModel = require("../models/taskmodel.js");
 const UserModel = require("../models/usermodel.js");
 const jwt = require("jsonwebtoken");
+const taskRouter = require("../routes/taskRouter.js");
 
 //getTasks for a specific user (userId)
 const getTasks = async (req, res) => {
@@ -14,7 +14,7 @@ const getTasks = async (req, res) => {
     const userAndTasks = await UserModel.findById(userId);
     if (userAndTasks) {
       //if user found return the tasks as response
-      return res.status(200).json({ userAndTasks });
+      return res.status(200).json(userAndTasks.task);
     }
     //If user not found return User not found message
     return res.json({ error: "User not found" });
@@ -27,9 +27,9 @@ const getTasks = async (req, res) => {
 //postTask function - used to create a new task for a specific user (userId)
 const postTask = async (req, res) => {
   try {
-    //get userId and task from req
+    //get userId from res.locals.userId retrieved for authentication middleware
     const userId = res.locals.userId;
-    console.log(res.locals.userId);
+    //task details is the req.body from create task form in the front end website
     const task = req.body;
     //find user by Id then add task
     const userAndTask = await UserModel.findByIdAndUpdate(
@@ -42,7 +42,7 @@ const postTask = async (req, res) => {
       { new: true }
     );
     if (userAndTask) {
-      //Send success response
+      //Send success response and user tasks
       return res.status(200).json(userAndTask.task);
     }
     //Send user not found response if user not identified
@@ -56,16 +56,23 @@ const postTask = async (req, res) => {
 //updateTask function - used to update an existing task for a specific user (userId)
 const updateTask = async (req, res) => {
   try {
-    const { userId, taskId, taskname, description, priority } = req.body;
+    //get userId from res.locals.userId retrieved for authentication middleware
+    const userId = res.locals.userId;
+    //task details is the req.body from create task form in the front end website
+    //const { title, description, status, dueDate } = req.body;
+    const task = req.body;
+    console.log(userId);
+    console.log(task);
 
     // Find the user by userId and update the specific task within the task array
     const updatedUser = await UserModel.findOneAndUpdate(
-      { _id: userId, "task._id": taskId }, // Find user by userId and task by taskId
+      { _id: userId, "task._id": task._id }, // Find user by userId and task by taskId
       {
         $set: {
-          "task.$.taskname": taskname, // Update taskname of the matched task
-          "task.$.description": description, // Update description of the matched task
-          "task.$.priority": priority,
+          "task.$.title": task.title, // Update fields of the matched task
+          "task.$.description": task.description,
+          "task.$.status": task.status,
+          "task.$.dueDate": task.dueDate,
         },
       },
       { new: true } // Return the updated document
@@ -73,8 +80,11 @@ const updateTask = async (req, res) => {
 
     // Check if user was found and task was updated successfully
     if (updatedUser) {
-      return res.status(200).json({ userAndTasks: updatedUser });
+      return res
+        .status(200)
+        .json({ user: updatedUser._id, tasks: updatedUser.task });
     } else {
+      //if user not found
       return res.status(404).json({ message: "User or task not found" });
     }
   } catch (error) {
@@ -84,8 +94,12 @@ const updateTask = async (req, res) => {
 
 //deleteTask function - delete task for a specific user
 const deleteTask = async (req, res) => {
-  const { userId, taskId } = req.body;
+  //get userId from res.locals.userId retrieved for authentication middleware
+  const userId = res.locals.userId;
+  //task details is the req.body from create task form in the front end website
+  const taskId = req.body._id;
   try {
+    //find user by Id then pull task to be deleted from task array by Id
     const userAndTask = await UserModel.findByIdAndUpdate(
       userId,
       {
@@ -94,9 +108,10 @@ const deleteTask = async (req, res) => {
       { new: true }
     );
     if (userAndTask) {
-      return res.json({ userAndTask });
+      //if user exists
+      return res.json({ user: userAndTask._id, tasks: userAndTask.task });
     }
-
+    //if user not exist
     return res.json({ error: "User not found" });
   } catch (error) {
     return res.json({ error: error.message });

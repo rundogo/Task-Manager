@@ -9,61 +9,155 @@
     <link rel="stylesheet" href="styles.css" />
   </head>
   <body>
-    <div class="website varela-round-regular">
+    <div class="website">
       <div class="navigation lilita-one-regular">
-        <a href="/"><h3>CronosTask</h3></a>
-        <div class="nav-item">
+        <div>
+          <div>
+            <a href="/">CronosTask</a>
+          </div>
+          <div class="search-container">
+            <input type="search" name="search" placeholder="Search..." />
+          </div>
+        </div>
+        <div>
           <a class="profile" href="/profile">Profile</a>
           <a class="logout" href="logout">Logout</a>
         </div>
       </div>
       <div class="main-container">
-        <div class="task-manager">
-          <div class="section-1">
-            <button class="create-btn">Create task</button>
-            <form action="">
-              <input type="text" name="title" required />
-              <input type="text" name="description" required />
-              <select name="status" id="status">
-                <option value="default" selected disabled>Status</option>
-                <option value="Not Started">Not Started</option>
-                <option value="In Progess">In Progress</option>
-                <option value="Completed">Completed</option>
-              </select>
-              <input type="date" name="dueDate" />
-              <button>create</button>
+        <div class="aside"></div>
+        <div class="main">
+          <div class="add-task">
+            <form action="" id="taskForm">
+              <input type="text" name="title" placeholder=" + Add Task" />
             </form>
           </div>
-          <div class="section-2"></div>
+          <div class="display-task">
+            <div class="category">
+              <h4>Not Started</h4>
+              <!--<div class="task">
+                <div class="task-state">
+                  <span id="status">Not Started</span>
+                  <span id="dueDate">13/05/2024</span>
+                </div>
+                <div class="task-details">
+                  <span id="title">title: Read a book</span>
+                  <span id="description">Read books to gain knowledge</span>
+                </div>
+              </div>-->
+            </div>
+            <div></div>
+          </div>
         </div>
       </div>
     </div>
 
     <script>
-      const taskForm = document.querySelector("form");
+      //get the add task form from html
+      const addForm = document.querySelector("#taskForm");
+      //get the display task element
+      const categoryElement = document.querySelector(".category");
 
-      taskForm.addEventListener("submit", async (e) => {
+      // add event listener of form after using enters the task name
+      addForm.addEventListener("submit", async (e) => {
+        //prevent the submit event from refreshing page
         e.preventDefault();
 
+        //get the task fields from form
+        //only name is entered for now
         const title = taskForm.title.value;
-        const description = taskForm.description.value;
-        const status = taskForm.status.value;
-        const dueDate = taskForm.dueDate.value;
+        const description = "";
+        const status = "";
+        const dueDate = "";
 
-        const res = await fetch("/tasks/create-task", {
-          method: "POST",
-          body: JSON.stringify({
-            title,
-            description,
-            status,
-            dueDate,
-          }),
-          headers: { "Content-Type": "application/json" },
-        });
-
-        const data = await res.json();
-        console.log(data[25]);
+        //send the task data to server for task to be created in database
+        try {
+          const res = await fetch("tasks/create-task", {
+            method: "POST",
+            body: JSON.stringify({
+              title,
+              description,
+              status,
+              dueDate,
+            }),
+            headers: { "Content-Type": "application/json" },
+          });
+          //the response contains all tasks for the user
+          const data = await res.json();
+          //call render method to update tasks Element with newly added task
+          render(data);
+          console.log(data);
+          //clear addForm
+          addForm.title.value = "";
+        } catch (error) {
+          console.log(error);
+        }
       });
+
+      //function that gets tasks from database
+      const loadTasks = async () => {
+        try {
+          const res = await fetch("/tasks/get-tasks", {
+            method: "GET",
+            headers: { "Content-Type": "application/json" },
+          });
+          const data = await res.json();
+          console.log(data);
+          //call the tasks render function
+          render(data);
+        } catch {}
+      };
+
+      //Load tasks for user
+      loadTasks();
+
+      //function that renders the tasks in html
+      //response from loadTasks is an array of tasks which is input to this render function
+
+      const render = (data) => {
+        data.forEach((task) => {
+          const taskElement = document.createElement("div");
+          taskElement.setAttribute("class", "task");
+
+          //create task element children
+          //task status and date element
+          const stateElement = document.createElement("div");
+          stateElement.setAttribute("class", "task-state");
+
+          const statusElement = document.createElement("span");
+          statusElement.setAttribute("id", "status");
+          statusElement.innerHTML = task.status;
+
+          const dueDateElement = document.createElement("span");
+          dueDateElement.setAttribute("id", "dueDate");
+          dueDateElement.innerHTML = task.dueDate;
+
+          stateElement.appendChild(statusElement);
+          stateElement.appendChild(dueDateElement);
+
+          //task title and description element
+          const detailsElement = document.createElement("div");
+          detailsElement.setAttribute("class", "task-details");
+
+          const titleElement = document.createElement("span");
+          titleElement.setAttribute("id", "title");
+          titleElement.innerHTML = task.title;
+
+          const descriptionElement = document.createElement("span");
+          descriptionElement.setAttribute("id", "description");
+          descriptionElement.innerHTML = task.description;
+
+          detailsElement.appendChild(titleElement);
+          detailsElement.appendChild(descriptionElement);
+
+          //append state and details element to task element
+          taskElement.appendChild(stateElement);
+          taskElement.appendChild(detailsElement);
+
+          //finally append task to category
+          categoryElement.appendChild(taskElement);
+        });
+      };
     </script>
     <script src="" async defer></script>
   </body>
