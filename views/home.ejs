@@ -6,7 +6,7 @@
     <title></title>
     <meta name="description" content="" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <link rel="stylesheet" href="styles.css" />
+    <link rel="stylesheet" href="/styles.css" />
   </head>
   <body>
     <div class="website">
@@ -15,12 +15,9 @@
           <div>
             <a href="/">CronosTask</a>
           </div>
-          <div class="search-container">
-            <input type="search" name="search" placeholder="Search..." />
-          </div>
         </div>
         <div>
-          <a class="profile" href="/profile">Profile</a>
+          <a class="profile" href="/profile"><%=name%></a>
           <a class="logout" href="logout">Logout</a>
         </div>
       </div>
@@ -34,17 +31,36 @@
           </div>
           <div class="display-task">
             <div class="category">
-              <h4>Not Started</h4>
-              <!--<div class="task">
+              <h4>All Tasks</h4>
+              <% tasks.forEach(function(task) { %>
+              <div class="task">
                 <div class="task-state">
-                  <span id="status">Not Started</span>
-                  <span id="dueDate">13/05/2024</span>
+                  <div><%= task.status %></div>
+                  <div><%= task.dueDate %></div>
                 </div>
                 <div class="task-details">
-                  <span id="title">title: Read a book</span>
-                  <span id="description">Read books to gain knowledge</span>
+                  <div><%= task.title %></div>
                 </div>
-              </div>-->
+                <div class="task-actions">
+                  <div>
+                    <form
+                      action="/tasks/delete-task/<%= task._id %>"
+                      method="POST"
+                    >
+                      <button type="submit">Delete</button>
+                    </form>
+                  </div>
+                  <div>
+                    <button
+                      class="updateTaskDetails"
+                      data-task-id="<%= task._id %>"
+                    >
+                      Update
+                    </button>
+                  </div>
+                </div>
+              </div>
+              <% }); %>
             </div>
             <div></div>
           </div>
@@ -53,13 +69,11 @@
     </div>
 
     <script>
-      //get the add task form from html
-      const addForm = document.querySelector("#taskForm");
-      //get the display task element
-      const categoryElement = document.querySelector(".category");
-
+      //creating new task script
+      //get the add task form values from html
+      const addTaskForm = document.querySelector("#taskForm");
       // add event listener of form after using enters the task name
-      addForm.addEventListener("submit", async (e) => {
+      addTaskForm.addEventListener("submit", async (e) => {
         //prevent the submit event from refreshing page
         e.preventDefault();
 
@@ -71,94 +85,104 @@
         const dueDate = "";
 
         //send the task data to server for task to be created in database
-        try {
-          const res = await fetch("tasks/create-task", {
-            method: "POST",
-            body: JSON.stringify({
-              title,
-              description,
-              status,
-              dueDate,
-            }),
-            headers: { "Content-Type": "application/json" },
+
+        const res = await fetch("tasks/create-task", {
+          method: "POST",
+          body: JSON.stringify({
+            title,
+            description,
+            status,
+            dueDate,
+          }),
+          headers: { "Content-Type": "application/json" },
+        });
+        //clear addTaskForm
+        addTaskForm.title.value = "";
+        //reload home page to load with new tasks
+        window.location.reload();
+      });
+    </script>
+
+    <script>
+      //creating new task script
+      //------IN PROGRESS--------
+      document.addEventListener("DOMContentLoaded", () => {
+        const updateTaskButtons =
+          document.querySelectorAll(".updateTaskDetails");
+        const tasks = document.querySelectorAll(".task");
+
+        updateTaskButtons.forEach((button) => {
+          button.addEventListener("click", async () => {
+            const taskId = button.dataset.taskId;
+            const url = `/tasks/get-task/${taskId}`;
+
+            try {
+              const response = await fetch(url, {
+                method: "GET",
+                // You can add headers, body, etc. if needed
+              });
+
+              if (!response.ok) {
+                throw new Error("Network response was not ok.");
+              }
+
+              const responseData = await response.json(); // Assuming the response is JSON
+              console.log(responseData); // Handle the response data here
+
+              // Append task update form
+              tasks.forEach((task) => {
+                appendForm(responseData, task);
+              });
+            } catch (error) {
+              console.error("Error fetching data:", error);
+            }
           });
-          //the response contains all tasks for the user
-          const data = await res.json();
-          //call render method to update tasks Element with newly added task
-          render(data);
-          console.log(data);
-          //clear addForm
-          addForm.title.value = "";
-        } catch (error) {
-          console.log(error);
-        }
+        });
+
+        const appendForm = (responseData, task) => {
+          const updateTaskForm = document.createElement("form");
+          const updateTitle = document.createElement("input");
+          updateTitle.value = responseData.title;
+
+          updateTaskForm.appendChild(updateTitle);
+          task.appendChild(updateTaskForm);
+        };
       });
 
-      //function that gets tasks from database
-      const loadTasks = async () => {
-        try {
-          const res = await fetch("/tasks/get-tasks", {
-            method: "GET",
-            headers: { "Content-Type": "application/json" },
-          });
-          const data = await res.json();
-          console.log(data);
-          //call the tasks render function
-          render(data);
-        } catch {}
-      };
+      /*
+                        //updating existing task
+                        //add event listener
+                        updateTaskForm.addEventListener("submit", async (e) => {
+                          e.preventDefault();
 
-      //Load tasks for user
-      loadTasks();
+                          const taskId = updateTaskForm.taskId.value;
+                          const title = updateTaskForm.updatedTitle.value;
+                          const description = updateTaskForm.updatedDescription.value;
+                          const status = updateTaskForm.updatedStatus.value;
+                          const date = updateTaskForm.updatedDueDate.value;
 
-      //function that renders the tasks in html
-      //response from loadTasks is an array of tasks which is input to this render function
+                          console.log(taskId, title, description, status, date);
 
-      const render = (data) => {
-        data.forEach((task) => {
-          const taskElement = document.createElement("div");
-          taskElement.setAttribute("class", "task");
+                          /*try {
+                                  const response = await fetch(`/tasks/${taskId}`, {
+                                    method: "PUT",
+                                    headers: { "Content-Type": "application/json" },
+                                    body: JSON.stringify({ title, description }),
+                                  });
 
-          //create task element children
-          //task status and date element
-          const stateElement = document.createElement("div");
-          stateElement.setAttribute("class", "task-state");
-
-          const statusElement = document.createElement("span");
-          statusElement.setAttribute("id", "status");
-          statusElement.innerHTML = task.status;
-
-          const dueDateElement = document.createElement("span");
-          dueDateElement.setAttribute("id", "dueDate");
-          dueDateElement.innerHTML = task.dueDate;
-
-          stateElement.appendChild(statusElement);
-          stateElement.appendChild(dueDateElement);
-
-          //task title and description element
-          const detailsElement = document.createElement("div");
-          detailsElement.setAttribute("class", "task-details");
-
-          const titleElement = document.createElement("span");
-          titleElement.setAttribute("id", "title");
-          titleElement.innerHTML = task.title;
-
-          const descriptionElement = document.createElement("span");
-          descriptionElement.setAttribute("id", "description");
-          descriptionElement.innerHTML = task.description;
-
-          detailsElement.appendChild(titleElement);
-          detailsElement.appendChild(descriptionElement);
-
-          //append state and details element to task element
-          taskElement.appendChild(stateElement);
-          taskElement.appendChild(detailsElement);
-
-          //finally append task to category
-          categoryElement.appendChild(taskElement);
-        });
-      };
+                                  if (response.ok) {
+                                    alert("Task updated successfully!");
+                                    // Optionally, update the UI to reflect the changes
+                                  } else {
+                                    const errorData = await response.json();
+                                    console.error("Failed to update task:", errorData.message);
+                                    alert("Failed to update task. Please try again.");
+                                  }
+                                } catch (error) {
+                                  console.error("Error updating task:", error);
+                                  alert("An unexpected error occurred.");
+                                }
+                        });*/
     </script>
-    <script src="" async defer></script>
   </body>
 </html>

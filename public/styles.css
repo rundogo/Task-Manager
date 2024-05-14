@@ -18,7 +18,7 @@ body {
   justify-content: space-between;
   align-items: center;
   flex-direction: row;
-  background-color: rgb(255, 183, 183);
+  background-color: rgb(146, 189, 230);
   height: 6vh;
 }
 
@@ -70,22 +70,21 @@ body {
   font-size: 1.5rem;
 }
 
-.main-container {
+.main-container-login {
   display: flex;
-  flex: 1;
   flex-direction: column;
+  justify-content: center;
 }
 
 .login-form {
   display: flex;
   flex-direction: column;
-  margin: 0 auto;
+  margin: 5vh auto 0 auto;
   padding: 1vh 1vw;
   border-radius: 10px;
   box-shadow: 5px 5px 5px 5px rgb(189, 189, 189);
   height: max-content;
-  gap: 2vh;
-  font-size: 1rem;
+  gap: 1vh;
 }
 
 .login-form > h4 {
@@ -145,7 +144,7 @@ body {
 
 .needaccount {
   align-self: center;
-  margin: 2vh 0;
+  margin: 0;
 }
 
 .main-container {
@@ -184,64 +183,35 @@ body {
 }
 
 .task {
-  background-color: rgb(216, 216, 255);
-  padding: 2px;
-  border-radius: 10px;
+  background-color: rgb(223, 223, 223);
+  padding: 10px;
   margin: 2vh 0;
 }
 
-.task span {
-  display: block;
-  margin: 5px;
-  padding: 10px 5px;
-}
-
-#title {
-  background-color: rgb(201, 255, 255);
-  border-radius: 10px;
-  height: 1.5vh;
-}
-
-#description {
-  background-color: rgb(255, 255, 255);
-  border-radius: 10px;
-  height: 4vh;
-  display: none;
-}
-
-#status {
-  background-color: rgb(255, 199, 179);
-}
-
-#dueDate {
-  background-color: rgb(255, 249, 207);
+.category {
+  background-color: white;
 }
 
 .task-state {
   display: flex;
   flex-direction: row;
+  justify-items: end;
+  gap: 1vw;
+  padding: 0;
+  font-size: 14px;
+  margin-bottom: 1vh;
+}
+
+.task-actions {
+  display: flex;
+  flex-direction: row;
+  gap: 1vw;
+  padding: 0;
   font-size: 12px;
-  align-items: center;
-  justify-items: center;
-  gap: 0;
 }
 
-.task-state > span {
-  display: block;
-  padding: 5px;
-  margin-top: 0;
-  width: 5vw;
-}
-
-.category > h4 {
-  margin-bottom: 0;
-  margin-top: 10px;
-  text-align: center;
-  color: black;
-}
-
-.category {
-  margin-top: 10px;
-  padding: 5px 10px;
-  background-color: rgb(239, 239, 239);
+.task-details {
+  font-size: 20px;
+  font-weight: bold;
+  margin-bottom: 2vh;
 }

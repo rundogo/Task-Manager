@@ -24,10 +24,10 @@ authRouter.post("/signup", authController.postSignup);
 //logout request
 authRouter.get("/logout", authController.logout);
 
-//password reset request page
-authRouter.get("/password-reset", authController.getPasswordReset);
+//password reset page request
+authRouter.get("/passwordreset", authController.getPasswordReset);
 
 //password reset post request
-authRouter.post("/password-reset", authController.postPasswordReset);
+authRouter.post("/passwordreset", authController.postPasswordReset);
 
 module.exports = authRouter;

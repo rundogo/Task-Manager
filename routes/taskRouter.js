@@ -13,6 +13,9 @@ taskRouter.post("/create-task", taskController.postTask);
 taskRouter.put("/update-task", taskController.updateTask);
 
 //delete task
-taskRouter.delete("/delete-task", taskController.deleteTask);
+taskRouter.post("/delete-task/:id", taskController.deleteTask);
+
+//Get one task
+taskRouter.get("/get-task/:id", taskController.getTaskById);
 
 module.exports = taskRouter;

@@ -106,7 +106,7 @@ const logout = async (get, res) => {
 };
 
 const getPasswordReset = async (req, res) => {
-  res.render("password-reset");
+  res.render("passwordreset");
 };
 
 //Password reset handling
@@ -121,14 +121,7 @@ const postPasswordReset = async (req, res) => {
     const user = await UserModel.checkEmail(email);
 
     if (!user) {
-      return res
-        .status(404)
-        .json({ message: "Email not registered, please sign up" });
-    }
-
-    // Check if password and confirmPassword match
-    if (password !== confirmPassword) {
-      return res.status(400).json({ message: "Passwords do not match" });
+      throw new Error("Email not registered, please sign up");
     }
 
     // Generate a salt and hash the new password
@@ -136,22 +129,26 @@ const postPasswordReset = async (req, res) => {
     const hashedPassword = bcrypt.hashSync(password, salt);
 
     // Update user's password in the database
-    const userUpdated = await UserModel.findOneAndUpdate(
+    const updateUser = await UserModel.findOneAndUpdate(
       { email },
       { $set: { password: hashedPassword } },
       { new: true }
     );
 
-    return res.json(userUpdated);
+    //create json web token, maxAge 3 days
+    const token = createJWT(user._id);
+    const maxAge = 3 * 24 * 60 * 60 * 1000;
+    res.cookie("jwt", token, { httpOnly: true, maxAge: maxAge });
+
+    return res.json(updateUser._id);
   } catch (error) {
-    console.error("Error resetting password:", error);
-    res.status(500).json({ message: "Internal server error" });
+    const errorObject = { error: error.message };
+    return res.json(errorObject);
   }
 };
 
 //error handler
 const handleErrors = (error) => {
-  console.log(error);
   const err = error.errors;
   const errorObject = {};
   //code block for other validation errors

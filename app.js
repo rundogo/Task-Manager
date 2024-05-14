@@ -4,6 +4,7 @@ const mongoose = require("mongoose");
 const morgan = require("morgan");
 const taskRouter = require("./routes/taskRouter.js");
 const authRouter = require("./routes/authRouter.js");
+const { getTasks } = require("./controllers/taskController.js");
 const cookieParser = require("cookie-parser");
 const { requireAuth } = require("./middleware/authMiddleware.js");
 
@@ -20,9 +21,7 @@ app.use(express.static("public"));
 app.use(cookieParser());
 
 //home page request, page is protected and needs authentication
-app.get("/", requireAuth, (req, res) => {
-  res.render("home");
-});
+app.get("/", requireAuth, getTasks);
 
 //landingPage request
 app.get("/landing", (req, res) => {
