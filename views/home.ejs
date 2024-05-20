@@ -22,8 +22,6 @@
         </div>
       </div>
       <div class="main-container">
-        <div class="aside"></div>
-        <div class="main">
           <div class="add-task">
             <form action="" id="taskForm">
               <input type="text" name="title" placeholder=" + Add Task" />
@@ -31,15 +29,29 @@
           </div>
           <div class="display-task">
             <div class="category">
-              <h4>All Tasks</h4>
-              <% tasks.forEach(function(task) { %>
+              <h4>Not Started</h4>
+              <% notStarted.forEach(function(task) { %>
               <div class="task">
                 <div class="task-state">
-                  <div><%= task.status %></div>
-                  <div><%= task.dueDate %></div>
+                  <form id="updateStatus">
+                    <div>
+                    <input type="hidden" name="taskId" value="<%= task._id%>">
+                    <select name="status">
+                      <option value="Not Started" <%= task.status === "Not Started" ? 'selected' : '' %>>Not Started</option>
+                      <option value="In Progress" <%= task.status === "In Progress" ? 'selected' : '' %>>In Progress</option>
+                      <option value="Completed" <%= task.status === "Completed" ? 'selected' : '' %>>Completed</option>
+                    </select>
+                    </div>
+                  </form>
                 </div>
                 <div class="task-details">
-                  <div><%= task.title %></div>
+                  <form id="updateTitle">
+                    <div>
+                    <input type="hidden" name="taskId" value="<%= task._id%>">
+                    <input type="text" name="title" value="<%= task.title %>">
+                    </div>
+                  </form>
+                  <p><%= task.description %></p>
                 </div>
                 <div class="task-actions">
                   <div>
@@ -51,20 +63,107 @@
                     </form>
                   </div>
                   <div>
-                    <button
-                      class="updateTaskDetails"
-                      data-task-id="<%= task._id %>"
-                    >
-                      Update
-                    </button>
+                    <form action="/tasks/get-task/<%= task._id %>" method="GET">
+                      <button class="updateTask" data-task-id="<%= task._id %>">
+                        Update
+                      </button>
+                    </form>
                   </div>
                 </div>
               </div>
               <% }); %>
             </div>
-            <div></div>
+           <div class="category">
+              <h4>In Progress</h4>
+              <% inProgress.forEach(function(task) { %>
+              <div class="task">
+                <div class="task-state">
+                  <form id="updateStatus">
+                    <div>
+                    <input type="hidden" name="taskId" value="<%= task._id%>">
+                    <select name="status">
+                      <option value="Not Started" <%= task.status === "Not Started" ? 'selected' : '' %>>Not Started</option>
+                      <option value="In Progress" <%= task.status === "In Progress" ? 'selected' : '' %>>In Progress</option>
+                      <option value="Completed" <%= task.status === "Completed" ? 'selected' : '' %>>Completed</option>
+                    </select>
+                    </div>
+                  </form>
+                </div>
+                <div class="task-details">
+                  <form id="updateTitle">
+                    <div>
+                    <input type="hidden" name="taskId" value="<%= task._id%>">
+                    <input type="text" name="title" value="<%= task.title %>">
+                    </div>
+                  </form>
+                  <p><%= task.description %></p>
+                </div>
+                <div class="task-actions">
+                  <div>
+                    <form
+                      action="/tasks/delete-task/<%= task._id %>"
+                      method="POST"
+                    >
+                      <button type="submit">Delete</button>
+                    </form>
+                  </div>
+                  <div>
+                    <form action="/tasks/get-task/<%= task._id %>" method="GET">
+                      <button class="updateTask" data-task-id="<%= task._id %>">
+                        Update
+                      </button>
+                    </form>
+                  </div>
+                </div>
+              </div>
+              <% }); %>
+            </div>
+            <div class="category">
+              <h4>Completed</h4>
+              <% completed.forEach(function(task) { %>
+              <div class="task">
+                <div class="task-state">
+                  <form id="updateStatus">
+                    <div>
+                    <input type="hidden" name="taskId" value="<%= task._id%>">
+                    <select name="status">
+                      <option value="Not Started" <%= task.status === "Not Started" ? 'selected' : '' %>>Not Started</option>
+                      <option value="In Progress" <%= task.status === "In Progress" ? 'selected' : '' %>>In Progress</option>
+                      <option value="Completed" <%= task.status === "Completed" ? 'selected' : '' %>>Completed</option>
+                    </select>
+                    </div>
+                  </form>
+                </div>
+                <div class="task-details">
+                  <form id="updateTitle">
+                    <div>
+                    <input type="hidden" name="taskId" value="<%= task._id%>">
+                    <input type="text" name="title" value="<%= task.title %>">
+                    </div>
+                  </form>
+                  <p><%= task.description %></p>
+                </div>
+                <div class="task-actions">
+                  <div>
+                    <form
+                      action="/tasks/delete-task/<%= task._id %>"
+                      method="POST"
+                    >
+                      <button type="submit">Delete</button>
+                    </form>
+                  </div>
+                  <div>
+                    <form action="/tasks/get-task/<%= task._id %>" method="GET">
+                      <button class="updateTask" data-task-id="<%= task._id %>">
+                        Update
+                      </button>
+                    </form>
+                  </div>
+                </div>
+              </div>
+              <% }); %>
+            </div>
           </div>
-        </div>
       </div>
     </div>
 
@@ -101,88 +200,49 @@
         //reload home page to load with new tasks
         window.location.reload();
       });
-    </script>
 
-    <script>
-      //creating new task script
-      //------IN PROGRESS--------
-      document.addEventListener("DOMContentLoaded", () => {
-        const updateTaskButtons =
-          document.querySelectorAll(".updateTaskDetails");
-        const tasks = document.querySelectorAll(".task");
+      //Update task status from home page
+      const updateStatus = document.querySelectorAll("#updateStatus");
+      updateStatus.forEach((taskStatus)=>{
+      taskStatus.addEventListener("change", async (e)=>{
+        const taskId = taskStatus.taskId.value;
+        const newStatus = taskStatus.status.value;
+        
+       await fetch(`/tasks/update-status`, {
+        method:"PUT",
+        body: JSON.stringify({
+          taskId: taskId,
+          status: newStatus
+        }),
+        headers:{"Content-Type": "application/json"}
+       })
+       window.location.reload();
+      })
+      })
 
-        updateTaskButtons.forEach((button) => {
-          button.addEventListener("click", async () => {
-            const taskId = button.dataset.taskId;
-            const url = `/tasks/get-task/${taskId}`;
+      //Update task tittle from home page
+      const updateTitle = document.querySelectorAll("#updateTitle");
+      updateTitle.forEach((taskTitle)=>{
+      taskTitle.addEventListener("submit", async (e)=>{
+        e.preventDefault();
+        const taskId = taskTitle.querySelector('input[name="taskId"]').value;
+        const newTitle = taskTitle.querySelector('input[name="title"]').value;
 
-            try {
-              const response = await fetch(url, {
-                method: "GET",
-                // You can add headers, body, etc. if needed
-              });
+        console.log(taskId)
+         console.log(newTitle)
+                 
+       await fetch(`/tasks/update-title`, {
+        method:"PUT",
+        body: JSON.stringify({
+          taskId: taskId,
+          title: newTitle
+        }),
+        headers:{"Content-Type": "application/json"}
+       })
+       window.location.reload();
+      })
+      })
 
-              if (!response.ok) {
-                throw new Error("Network response was not ok.");
-              }
-
-              const responseData = await response.json(); // Assuming the response is JSON
-              console.log(responseData); // Handle the response data here
-
-              // Append task update form
-              tasks.forEach((task) => {
-                appendForm(responseData, task);
-              });
-            } catch (error) {
-              console.error("Error fetching data:", error);
-            }
-          });
-        });
-
-        const appendForm = (responseData, task) => {
-          const updateTaskForm = document.createElement("form");
-          const updateTitle = document.createElement("input");
-          updateTitle.value = responseData.title;
-
-          updateTaskForm.appendChild(updateTitle);
-          task.appendChild(updateTaskForm);
-        };
-      });
-
-      /*
-                        //updating existing task
-                        //add event listener
-                        updateTaskForm.addEventListener("submit", async (e) => {
-                          e.preventDefault();
-
-                          const taskId = updateTaskForm.taskId.value;
-                          const title = updateTaskForm.updatedTitle.value;
-                          const description = updateTaskForm.updatedDescription.value;
-                          const status = updateTaskForm.updatedStatus.value;
-                          const date = updateTaskForm.updatedDueDate.value;
-
-                          console.log(taskId, title, description, status, date);
-
-                          /*try {
-                                  const response = await fetch(`/tasks/${taskId}`, {
-                                    method: "PUT",
-                                    headers: { "Content-Type": "application/json" },
-                                    body: JSON.stringify({ title, description }),
-                                  });
-
-                                  if (response.ok) {
-                                    alert("Task updated successfully!");
-                                    // Optionally, update the UI to reflect the changes
-                                  } else {
-                                    const errorData = await response.json();
-                                    console.error("Failed to update task:", errorData.message);
-                                    alert("Failed to update task. Please try again.");
-                                  }
-                                } catch (error) {
-                                  console.error("Error updating task:", error);
-                                  alert("An unexpected error occurred.");
-                                }
-                        });*/
     </script>
   </body>
 </html>

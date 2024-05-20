@@ -15,8 +15,24 @@ const getTasks = async (req, res) => {
   const tasks = userAndTasks.task;
   const name = userAndTasks.name;
   const surname = userAndTasks.surname;
+
+  //tasks Not Started
+  let notStarted = tasks.filter(
+    (task) => task.status === "Not Started" || task.status === ""
+  );
+  //tasks In progress
+  let inProgress = tasks.filter((task) => task.status === "In Progress");
+  //tasks Completed
+  let completed = tasks.filter((task) => task.status === "Completed");
+
   //render home page with tasks
-  return res.render("home", { tasks, name, surname });
+  return res.render("home", {
+    notStarted,
+    inProgress,
+    completed,
+    name,
+    surname,
+  });
 };
 
 //postTask function - used to create a new task for a specific user (userId)
@@ -61,15 +77,7 @@ const updateTask = async (req, res) => {
       { new: true } // Return the updated document
     );
 
-    // Check if user was found and task was updated successfully
-    if (updatedUser) {
-      return res
-        .status(200)
-        .json({ user: updatedUser._id, tasks: updatedUser.task });
-    } else {
-      //if user not found
-      return res.status(404).json({ message: "User or task not found" });
-    }
+    return res.redirect("/");
   } catch (error) {
     return res.status(500).json({ message: error.message });
   }
@@ -94,25 +102,68 @@ const deleteTask = async (req, res) => {
   return res.redirect("/");
 };
 
-//getTask by ID to edit it
-const getTaskById = async (req, res) => {
-  const userId = res.locals.userId;
-  const taskId = req.params.id;
-
+//update task status
+const updateTaskStatus = async (req, res) => {
   try {
-    const UserAndTask = await UserModel.findOne({
-      _id: userId,
-    });
-    let updateTask;
-    UserAndTask.task.forEach((task) => {
-      if ((task._id = taskId)) {
-        updateTask = task;
-      }
-    });
-    res.json(updateTask);
+    //get userId from res.locals.userId retrieved for authentication middleware
+    const userId = res.locals.userId;
+    //task status and taskId is the req.body from update task status request
+    const status = req.body.status;
+    const taskId = req.body.taskId;
+
+    console.log(userId);
+    console.log(req.body);
+
+    // Find the user by userId and update the specific task within the task array
+    const updatedUser = await UserModel.findOneAndUpdate(
+      { _id: userId, "task._id": taskId }, // Find user by userId and task by taskId
+      {
+        $set: {
+          "task.$.status": status,
+        },
+      },
+      { new: true } // Return the updated document
+    );
+    return res.redirect("/");
   } catch (error) {
-    res.json({ error: error.message });
+    return res.status(500).json({ message: error.message });
   }
 };
 
-module.exports = { getTasks, postTask, updateTask, deleteTask, getTaskById };
+//update task title
+const updateTaskTitle = async (req, res) => {
+  try {
+    //get userId from res.locals.userId retrieved for authentication middleware
+    const userId = res.locals.userId;
+    //task status and taskId is the req.body from update task status request
+    const title = req.body.title;
+    const taskId = req.body.taskId;
+
+    console.log(userId);
+    console.log(req.body);
+
+    // Find the user by userId and update the specific task within the task array
+    const updatedUser = await UserModel.findOneAndUpdate(
+      { _id: userId, "task._id": taskId }, // Find user by userId and task by taskId
+      {
+        $set: {
+          "task.$.title": title,
+        },
+      },
+      { new: true } // Return the updated document
+    );
+    res.redirect("/");
+  } catch (error) {
+    return res.status(500).json({ message: error.message });
+  }
+};
+
+module.exports = {
+  getTasks,
+  postTask,
+  updateTask,
+  deleteTask,
+  updateTask,
+  updateTaskStatus,
+  updateTaskTitle,
+};

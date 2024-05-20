@@ -28,7 +28,7 @@ app.get("/landing", (req, res) => {
   res.render("landing");
 });
 
-//Send requests to authRouter
+//Send requests to authRouter for /login, /logout, /sign-up
 app.use("/", authRouter);
 
 //Send requests to taskRouter

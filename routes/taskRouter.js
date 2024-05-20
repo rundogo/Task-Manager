@@ -15,7 +15,10 @@ taskRouter.put("/update-task", taskController.updateTask);
 //delete task
 taskRouter.post("/delete-task/:id", taskController.deleteTask);
 
-//Get one task
-taskRouter.get("/get-task/:id", taskController.getTaskById);
+//update task status
+taskRouter.put("/update-status", taskController.updateTaskStatus);
+
+//update task title
+taskRouter.put("/update-title", taskController.updateTaskTitle);
 
 module.exports = taskRouter;
