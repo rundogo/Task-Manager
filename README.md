@@ -45,6 +45,7 @@ Features
 User authentication (login, signup, logout)
 Task management (view tasks, create new tasks, update tasks, delete tasks)
 Password reset functionality (via email)
+
 Project Structure
 The project structure is organized as follows:
 
